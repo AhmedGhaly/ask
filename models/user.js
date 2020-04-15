@@ -38,10 +38,7 @@ const userSchema = mongooes.Schema({
         type : mongooes.Schema.Types.ObjectId,
         ref : 'user'
     }],
-    allAnswer : [{
-        type : mongooes.Schema.Types.ObjectId,
-        ref : 'answer'
-    }]
+    intersting : [String]
 })
 
 module.exports = mongooes.model('user', userSchema)

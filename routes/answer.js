@@ -28,12 +28,14 @@ router.get('/follower', isAuthen, answerController.getFollower)
 //get my follows
 router.get('/follows', isAuthen, answerController.getFollows)
 
-router.get('/:answerId', isAuthen, answerController.getOneAnswer)
+router.get('answer/:answerId', isAuthen, answerController.getOneAnswer)
 
+router.get('/interst', isAuthen, answerController.getIntersting)
 
 
 ///////////////////////////////////////////////////////////////////
 
+router.delete('/interst/:interst', isAuthen, answerController.deleteInterste)
 
 router.delete ('/answer/:answerId', isAuthen, answerController.deleteAnswer)
 
@@ -57,5 +59,6 @@ router.post('/follow/:userId', isAuthen, answerController.follow)
 
 router.delete('/follow/:userId', isAuthen, answerController.unfollow)
 
+router.post('/interst', isAuthen, answerController.postIntersting)
 
 module.exports = router

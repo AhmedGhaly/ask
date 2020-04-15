@@ -14,7 +14,6 @@ function compare(a, b) {
 /////////////////////////////////////////////////////////////////////
 
 
-
     
 ///////////////////get methods//////////////////////////////////////
 exports.getHome = (req, res, next) => {
@@ -171,8 +170,75 @@ exports.getOneAnswer = (req, res, next) => {
     })
 }
 
+exports.getIntersting = (req, res, next) => {
+    const userId = req.userId
+    User.findById(userId).then(user => {
+        res.status(200).json({
+            message : 'get done',
+            intersting : user.intersting
+        })
+    }).catch(err => {
+        if(!err.statusCode)
+            err.statusCode = 500
+        next(err)
+    })
+} 
 
 //////////////////////////////////////////////////////////////////////////
+
+exports.postIntersting = (req, res, next) => {
+    const userId = req.userId
+    const intersting = req.body.intersting
+    let founded
+    User.findById(userId).then(user => {
+        user.intersting.find(interst => {
+            if (interst === intersting)
+                founded = true
+        })
+        if(founded){
+            const err = new Error('this intersting is aleady exist')
+            err.statusCode = 403
+            throw err
+        }
+        user.intersting.push(intersting)
+        return user.save()
+    }).then(user => {
+        res.status(200).json({
+            message : 'added done'
+        })
+    }).catch(err => {
+        if(!err.statusCode)
+            err.statusCode = 500
+        next(err)
+    })
+}
+
+exports.deleteInterste = (req, res, next) =>{
+    let founded
+    const intersting = req.params.interst
+    const userId = req.userId
+    User.findById(userId).then(user => {
+        user.intersting.find(interst => {
+            if (interst === intersting)
+                founded = true
+        })
+        if(!founded){
+            const err = new Error('this intersting is not exist')
+            err.statusCode = 403
+            throw err
+        }
+        user.intersting.pull(intersting)
+        return user.save()
+    }).then(user => {
+        res.status(200).json({
+            message : 'the item deleted'
+        })
+    }).catch(err => {
+        if(!err.statusCode)
+            err.statusCode = 500
+        next(err)
+    })
+}
 
 exports.deleteAnswer = (req, res, next) => {
     const answerId = req.params.answerId
