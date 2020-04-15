@@ -1,1 +1,1 @@
-RESTSPI for website like ask.fm
+RESTFUL API for website like ask.fm
