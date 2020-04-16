@@ -3,7 +3,6 @@ const validationResult = require('express-validator').validationResult
 const Answer = require('../models/answer')
 const User = require('../models/user')
 const Ask = require('../models/ask')
-const { use } = require('../routes/answer')
 
 //////////////////////// my fuctoins /////////////////////////////////////////
 
@@ -34,16 +33,23 @@ exports.getHome = (req, res, next) => {
     
 exports.getAnswer = (req, res, next) => {
     const userId = req.userId
-    User.findById(userId).then(user => {
+    let thatAnswer, answers
+    User.findById(userId)
+    .populate({
+        path: 'answers',
+        select : 'question answer from',
+        populate: { path: 'from', select : 'username' }
+      })
+    .then(user => {
         if(!user){
             const err = new Error("invalid id user")
             err.statusCode = 404
             throw err
         }
-        const answers = user.answers
+        thatAnswer = user.answers
         res.status(200).json({
             message : "fetch all answer of the user is done",
-            answer : answers
+            answer :  thatAnswer
         })
     }).catch(err => {
         if(!err.statusCode)
@@ -54,7 +60,11 @@ exports.getAnswer = (req, res, next) => {
 
 exports.getanswerMe = (req, res, next) => {
     const userId = req.userId
-    User.findById(userId).then(user => {
+    User.findById(userId).populate({
+        path : 'answerMe',
+        select : 'question answer userId',
+        populate : {path : 'userId', select : 'username'}
+    }).then(user => {
         if(!user){
             const err = new Error("invalid id user")
             err.statusCode = 404
@@ -74,7 +84,11 @@ exports.getanswerMe = (req, res, next) => {
 
 exports.getAskToAnswer = (req, res, next) => {
     const userId = req.userId
-    User.findById(userId).then(user => {
+    User.findById(userId).populate({
+        path : 'askToAsnswer',
+        select : 'question from',
+        populate : { path : 'from', select : 'username'}
+    }).then(user => {
         if(!user){
             const err = new Error("invalid id user")
             err.statusCode = 404
@@ -94,7 +108,14 @@ exports.getAskToAnswer = (req, res, next) => {
 
 exports.getAsks = (req, res, next) => {
     const userId = req.userId
-    User.findById(userId).populate('asks', 'question to answer').then(user => {
+    User.findById(userId)
+    .populate({
+        path : 'asks',
+        select : 'question to answer',
+        populate : { path : 'to', select : 'username'},
+        populate : { path : 'answer', select : 'question answer'}
+    })
+    .then(user => {
         if(!user){
             const err = new Error("invalid id user")
             err.statusCode = 404
@@ -103,7 +124,7 @@ exports.getAsks = (req, res, next) => {
         const asks = user.asks
         res.status(200).json({
             message : "fetch all asks wait for answer it  is done",
-            answer : asks
+            ask : asks
         })
     }).catch(err => {
         if(!err.statusCode)
@@ -153,7 +174,17 @@ exports.getFollows = (req, res, next) => {
 }
 exports.getOneAnswer = (req, res, next) => {
     const answerId = req.params.answerId
-    Answer.findById(answerId).then(ans => {
+    Answer.findById(answerId)
+    .populate({
+        path : 'nestedAnswers', 
+        select : 'question answer from userId',
+        populate : { path : 'from userId', select : 'username'}
+    })
+    .populate ({
+        path : 'userId from',
+        select : 'username'
+    })
+    .then(ans => {
         if(!ans){
             const err = new Error("invalid id answer")
             err.statusCode = 404

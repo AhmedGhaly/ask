@@ -28,7 +28,7 @@ router.get('/follower', isAuthen, answerController.getFollower)
 //get my follows
 router.get('/follows', isAuthen, answerController.getFollows)
 
-router.get('answer/:answerId', isAuthen, answerController.getOneAnswer)
+router.get('/answer/:answerId', isAuthen, answerController.getOneAnswer)
 
 router.get('/interst', isAuthen, answerController.getIntersting)
 
