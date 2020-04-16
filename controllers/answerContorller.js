@@ -177,8 +177,8 @@ exports.getOneAnswer = (req, res, next) => {
     Answer.findById(answerId)
     .populate({
         path : 'nestedAnswers', 
-        select : 'question answer from userId',
-        populate : { path : 'from userId', select : 'username'}
+        select : 'question answer from',
+        populate : { path : 'from', select : 'username'}
     })
     .populate ({
         path : 'userId from',
