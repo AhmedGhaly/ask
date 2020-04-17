@@ -38,7 +38,13 @@ const userSchema = mongooes.Schema({
         type : mongooes.Schema.Types.ObjectId,
         ref : 'user'
     }],
-    intersting : [String]
+    intersting : [String],
+    resetToken : String,
+    expired : Date,
+    active : {
+        type : Boolean,
+        default : false
+    }
 })
 
 module.exports = mongooes.model('user', userSchema)

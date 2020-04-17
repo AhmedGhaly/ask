@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const body = require('express-validator').body
 
-const isAuthen = require('../midleware/isAuth')
+const isAuthen = require('../middleware/isAuth')
 const answerController = require('../controllers/answerContorller')
 
 
