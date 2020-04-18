@@ -34,6 +34,8 @@ router.post('/login'
 
 router.get('/:userId', userContoller.getUseInfo)
 
+router.get('/me/userinfo', isAuthen, userContoller.getMyInfo)
+
 
 router.post('/logout', isAuthen, userContoller.logOut)
 
@@ -48,5 +50,21 @@ router.post('/login/reset/:token'
 
 
 router.get('/confirm/:token', userContoller.confirmEmail)
+
+router.put('/me/edit'
+    , body('email').trim().not().isEmpty().isEmail()
+    , isAuthen, userContoller.editeUser)
+
+router.put('/me/changepassword', isAuthen
+    , body('currentPass')
+    , body('newPassword').not().isEmpty().isLength({min : 5})
+    , body('confirmNewPassword').trim().custom((value, {req}) => {
+        return (value === req.body.newPassword)
+    })
+    , userContoller.changePassword)
+
+
+router.delete('/delete', isAuthen, userContoller.deleteUser)
+
 
 module.exports = router

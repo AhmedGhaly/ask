@@ -44,7 +44,9 @@ const userSchema = mongooes.Schema({
     active : {
         type : Boolean,
         default : false
-    }
+    },
+    activeToken : String,
+    activeTokenExpired : Date
 })
 
 module.exports = mongooes.model('user', userSchema)
