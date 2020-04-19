@@ -2,16 +2,21 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const helmet = require('helmet')
 
 const app = express();
 
 
 const answerRouter = require('./routes/answer')
 const authRouter = require('./routes/auth')
+const userRouter = require('./routes/user')
+
+
 
 app.use(bodyParser.json())
 app.use(logger('dev'));
 app.use(express.json());
+app.use(helmet())
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -32,8 +37,8 @@ app.use((req, res, next) => {
 
 // routers
 app.use(answerRouter)
-app.use('/user', authRouter)
-
+app.use('/auth', authRouter)
+app.use('/user', userRouter)
 
 //error handling
 

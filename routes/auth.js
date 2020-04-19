@@ -3,8 +3,9 @@ const  body = require('express-validator').body
 
 const User = require('../models/user')
 const isAuthen = require('../middleware/isAuth')
-const userContoller = require('../controllers/authController')
+const authController = require('../controllers/authController')
 
+// POST => /auth/signup
 router.post('/signup'
     , body('email').trim().not().isEmpty().isEmail()
         .custom((value, {req}) => {
@@ -18,8 +19,9 @@ router.post('/signup'
     , body('confirmpassword').trim().custom((value, {req}) => {
         return (value === req.body.password)
     })
-    , userContoller.signup)
+    , authController.signup)
 
+// POST => /auth/login
 router.post('/login'
     , body('email').trim().not().isEmpty().isEmail()
     .custom((value, {req}) => {
@@ -30,41 +32,35 @@ router.post('/login'
     })
     .normalizeEmail()
     , body('password').not().isEmpty().isLength({min : 5}).trim()
-    , userContoller.login)
+    , authController.login)
 
-router.get('/:userId', userContoller.getUseInfo)
+// POST => /auth/logout
+router.post('/logout', isAuthen, authController.logOut)
 
-router.get('/me/userinfo', isAuthen, userContoller.getMyInfo)
+// POST => /auth/forgetpass
+router.post ('/forgetpass', authController.frogetPass)
 
-
-router.post('/logout', isAuthen, userContoller.logOut)
-
-router.post ('/forgetpass', userContoller.frogetPass)
-
+// POST => /auth/login/reset/:token
 router.post('/login/reset/:token'
     , body('password').not().isEmpty().isLength({min : 5})
     , body('confirmpassword').trim().custom((value, {req}) => {
         return (value === req.body.password)
     })
-    , userContoller.resetPassword)
+    , authController.resetPassword)
 
+// POST => /auth/confirm/:token
+router.get('/confirm/:token', authController.confirmEmail)
 
-router.get('/confirm/:token', userContoller.confirmEmail)
-
-router.put('/me/edit'
-    , body('email').trim().not().isEmpty().isEmail()
-    , isAuthen, userContoller.editeUser)
-
+// POST => /auth/me/changepassword
 router.put('/me/changepassword', isAuthen
     , body('currentPass')
     , body('newPassword').not().isEmpty().isLength({min : 5})
     , body('confirmNewPassword').trim().custom((value, {req}) => {
         return (value === req.body.newPassword)
     })
-    , userContoller.changePassword)
+    , authController.changePassword)
 
 
-router.delete('/delete', isAuthen, userContoller.deleteUser)
 
 
 module.exports = router

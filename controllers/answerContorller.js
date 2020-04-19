@@ -385,7 +385,13 @@ exports.getAsk =  (req, res, next) => {
             hidden : hidden,
             answer : theAnswer._id
         })
-        user.askToAsnswer.push(newAsk)
+        let blocked = false
+        user.blockList.find(userId => {
+            if(userId.toString() === from)
+            blocked = true
+        })
+        if(!blocked)
+            user.askToAsnswer.push(newAsk)
         return user.save()
     }).then(result => {
         return User.findById(from)

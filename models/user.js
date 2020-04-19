@@ -45,6 +45,10 @@ const userSchema = mongooes.Schema({
         type : Boolean,
         default : false
     },
+    blockList : [{
+        type : mongooes.Schema.Types.ObjectId,
+        ref : 'user'
+    }],
     activeToken : String,
     activeTokenExpired : Date
 })

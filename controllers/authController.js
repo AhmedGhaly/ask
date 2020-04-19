@@ -136,56 +136,8 @@ exports.login = (req, res, next) => {
     })
 }
 
-exports.getMyInfo = (req, res ,next) => {
-    const userId = req.userId
-    console.log(userId) 
-    User.findById(userId).populate('answers', 'question answer').then(user => {
-        if(!user){
-            const err = new Error('there is no user with that id!')
-            err.statusCode = 404
-            throw err
-        }
-        const userSend = {
-            name : user.username,
-            email : user.email,
-            answer : user.answers
-        }
-        res.status(200).json({
-            message : 'get user info done',
-            user : userSend
-        })
-    }).catch(err => {
-        if(!err.statusCode)
-            err.statusCode = 500
-        next(err)
-    })
-
-}
 
 
-exports.getUseInfo = (req, res, next) => {
-    const userId = req.params.userId
-    User.findById(userId).populate('answers', 'question answer').then(user => {
-        if(!user){
-            const err = new Error('there is no user with that id!')
-            err.statusCode = 404
-            throw err
-        }
-        const userSend = {
-            name : user.username,
-            email : user.email,
-            answer : user.answers
-        }
-        res.status(200).json({
-            message : 'get user info done',
-            user : userSend
-        })
-    }).catch(err => {
-        if(!err.statusCode)
-            err.statusCode = 500
-        next(err)
-    })
-}
 
 // the rest of this function must be in the frontend
 exports.logOut = (req, res, next) => {
@@ -346,72 +298,3 @@ exports.changePassword = (req, res, next) => {
     })
 }
 
-exports.editeUser = (req, res, next) => {
-    const userId = req.userId
-    const { username, email} = req.body
-    const error = validationResult(req)
-    let theUser
-    if(!error.isEmpty()){
-        const err = new Error('invlaid input')
-        err.data = error.array()
-        throw err
-
-    }
-    User.findById(userId).then(user => {
-        if(!user){
-            const err = new Error('the user is not founded')
-            err.statusCode = 404
-            throw err
-        }
-        theUser = user
-        if(email !== user.email){
-            return User.findOne({email : email})
-        }
-    }).then(user => {
-        if(user){
-            const err = new Error('the email exist')
-            err.statusCode = 403
-            throw err
-        }
-        else if(email !== theUser.email) {
-            theUser.email = email
-            theUser.active = false
-        }
-        if(username) {
-            theUser.username =  username
-        }
-
-        return theUser.save()
-    }).then(user => {
-        res.status(200).json({
-            message : 'your data is updated',
-            user : {
-                username : user.username,
-                email : user.email
-            }
-        })
-    }).catch(err => {
-        if(!err.statusCode)
-            err.statusCode = 500
-        next(err)
-    })
-
-}
-
-exports.deleteUser = (req, res, next) => {
-    const userId = req.userId
-    User.findByIdAndDelete(userId).then(user => {
-        if(!user){
-            const err = new Error('the user is not founded')
-            err.statusCode = 404
-            throw err
-        }
-        res.status(200).json({
-            message : "done"
-        })
-    }).catch(err => {
-        if(!err.statusCode)
-            err.statusCode = 500
-        next(err)
-    })
-}
